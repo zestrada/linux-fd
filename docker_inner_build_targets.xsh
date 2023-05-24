@@ -10,10 +10,13 @@ if "IGLOO_TARGETLIST" not in os.environ:
     TARGETLIST="armel mipseb mipsel".split()
 else:
     TARGETLIST=os.environ["IGLOO_TARGETLIST"].split()
+
+if "DOCKER_USER" not in os.environ:
+    $DOCKER_USER=$USER
 $CONSOLE="/console"
 $PANDA="/panda"
 $BUILD_ROOT="/linux" #/linux is the volume mount point for this directory
-$OUT="/linux/kernels"
+$OUT="/linux/binaries"
 
 echo f"Building for {TARGETLIST} arches"
 
@@ -75,7 +78,7 @@ for arch in TARGETLIST:
     @($PANDA)/panda/plugins/osi_linux/utils/kernelinfo_gdb/run.sh ./build/@(arch)/vmlinux ./panda_profile.@(arch)
 
     if os.path.exists(f'build/{arch}/arch/{short_arch}/boot/zImage'):
-      cp  f'build/{arch}/arch/${short_arch}/boot/zImage' @($OUT)/zImage.@(arch)
+      cp  f'build/{arch}/arch/{short_arch}/boot/zImage' @($OUT)/zImage.@(arch)
 
     cp build/@(arch)/vmlinux @($OUT)/vmlinux.@(arch)
     echo f"[{arch}]" >> @($OUT)/firmadyne_profiles.conf
@@ -83,4 +86,6 @@ for arch in TARGETLIST:
 
     echo 'Building volatility profile'
     /dwarf2json/dwarf2json linux --elf build/@(arch)/vmlinux | xz - > @($OUT)/vmlinux.@(arch).json.xz
-echo f"Built by {$(whoami).strip()} on $(date) at version $(git describe HEAD)" > @($OUT)/README.txt
+
+git config --global --add safe.directory /linux
+echo f"Built by {$DOCKER_USER} on {$(date).strip()} at version {$(git describe HEAD).strip()}" > @($OUT)/README.txt
