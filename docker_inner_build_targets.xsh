@@ -83,3 +83,4 @@ for arch in TARGETLIST:
 
     echo 'Building volatility profile'
     /dwarf2json/dwarf2json linux --elf build/@(arch)/vmlinux | xz - > @($OUT)/vmlinux.@(arch).json.xz
+echo f"Built by {$(whoami).strip()} on $(date) at version $(git describe HEAD)" > @($OUT)/README.txt

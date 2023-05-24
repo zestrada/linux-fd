@@ -18,6 +18,8 @@ This module can be configured using the following parameters:
 Usage
 =====
 
+Everything below is from the original FIRMADYNE project. We now have a new docker build process that can be invoked with `./docker_build.sh`.  The kernel, PANDA OSI profile, and COSI profiles will be available in the `kernels/` directory.
+
 Create the kernel build output directory:
 
 `mkdir -p build/armel`
